@@ -1,0 +1,32 @@
+---
+title: "test code chunt"
+author: "Pengyuan Su (ps3195)"
+date: "11/9/2020"
+output: html_document
+---
+1
+```{r}
+
+```
+
+
+2
+```{r}
+
+```
+
+3
+```{r}
+
+```
+
+4
+```{r}
+
+```
+
+5
+```{r}
+
+```
+
