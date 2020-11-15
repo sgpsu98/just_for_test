@@ -1,32 +1,275 @@
 ---
-title: "test code chunt"
+title: "developer influence"
 author: "Pengyuan Su (ps3195)"
 date: "11/9/2020"
 output: html_document
 ---
-1
-```{r}
 
-```
-
-
-2
-```{r}
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(readr)
+library(plotly)
+
+knitr::opts_chunk$set(
+  echo = F,
+  warning = F
+)
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
-3
+### import data
+
+```{r echo=TRUE, message=FALSE}
+game_df = 
+  read_csv("game_2.csv") %>% 
+  select(title, developer, meta_score, user_score, total_sale, na_sale, pal_sale, japan_sale, other_sale) %>% 
+  group_by(developer) %>% 
+  summarize(
+    mean_meta = mean(meta_score),
+    mean_user = mean(user_score),
+    sum_total = sum(total_sale),
+    mean_sale = mean(total_sale)
+  ) %>% 
+  mutate(
+    developer = factor(developer)
+  )
+```
+
+
+### developer vs mean meta
+
+
+
 ```{r}
+mean_meta_plot1 = 
+  game_df %>%
+  arrange(-mean_meta) %>% 
+  head(20) %>% 
+  mutate(
+    developer = forcats::fct_reorder(developer, mean_meta)
+  ) %>% 
+  ggplot(aes(x = developer, y = mean_meta, color = developer)) +
+  geom_point() +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "developers with Top 20 mean meat score",
+    y = "mean meta score"
+  )
+
+ggplotly(mean_meta_plot1)
+```
+
+
+```{r}
+mean_meta_plot2 = 
+  game_df %>%
+  arrange(mean_meta) %>% 
+  head(20) %>% 
+  mutate(
+    developer = forcats::fct_reorder(developer, -mean_meta)
+  ) %>% 
+  ggplot(aes(x = developer, y = mean_meta, color = developer)) +
+  geom_point() +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "developers with Last 20 mean meat score",
+    y = "mean meta score"
+  )
+ggplotly(mean_meta_plot2)
+```
+
+
+```{r}
+#meta_plot = 
+#  read_csv("game_2.csv") %>% 
+#  select(title, developer, meta_score, user_score, total_sale, na_sale, pal_sale, japan_sale, other_sale) %>% 
+#  group_by(developer) %>%
+#  mutate(
+#    developer = forcats::fct_reorder(developer, meta_score)
+#  ) %>%
+#  ggplot(aes(x = developer, y = meta_score)) +
+#  geom_boxplot() +
+#  theme(
+#    legend.position = 'none',
+#    axis.text.x = element_text(angle = -90,
+#                                   vjust = 0.5,
+#                                   hjust = 1)
+#                              )
+#
 
 ```
 
-4
-```{r}
 
+### developer vs mean user score
+
+```{r}
+mean_user_plot1 = 
+  game_df %>%
+  arrange(-mean_user) %>% 
+  head(20) %>% 
+  mutate(
+    developer = forcats::fct_reorder(developer, mean_user)
+  ) %>% 
+  ggplot(aes(x = developer, y = mean_user, color = developer)) +
+  geom_point() +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "developers with Top 20 mean user score",
+    y = "mean user score"
+  )
+
+ggplotly(mean_user_plot1)
 ```
 
-5
+
+```{r}
+mean_user_plot2 = 
+  game_df %>%
+  arrange(mean_user) %>%
+  head(20) %>% 
+  mutate(
+    developer = forcats::fct_reorder(developer, -mean_user)
+  ) %>% 
+  ggplot(aes(x = developer, y = mean_user, color = developer)) +
+  geom_point() +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "developers with Last 20 mean user score",
+    y = "mean user score"
+  )
+
+ggplotly(mean_user_plot2)
+```
+
+
+### developer vs. mean of total sales
+
 ```{r}
 
+mean_sales_plot1 = 
+  game_df %>%
+  mutate(
+    developer = fct_reorder(developer, mean_sale)
+  ) %>%
+  arrange(-mean_sale) %>% 
+  head(20) %>%
+  ggplot(aes(x = developer, y = mean_sale, fill = developer)) +
+  geom_bar(stat = "identity") +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "Developers with Top 20 mean of sales",
+    y = "mean of sales"
+  )
+
+ggplotly(mean_sales_plot1)
+```
+
+
+```{r}
+
+mean_sales_plot2 = 
+  game_df %>% 
+  arrange(mean_sale) %>%
+  head(20) %>% 
+  mutate(
+    developer = fct_reorder(developer, -mean_sale)
+  ) %>% 
+  ggplot(aes(x = developer, y = mean_sale, fill = developer)) +
+  geom_bar(stat = "identity") +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "Developers with Last 20 mean of sales",
+    y = "mean of sales"
+  )
+
+ggplotly(mean_sales_plot2)
+```
+
+### developer vs. sum of total sales
+
+```{r}
+
+total_sales_plot1 = 
+  game_df %>%
+  mutate(
+    developer = fct_reorder(developer, sum_total)
+  ) %>%
+  arrange(-sum_total) %>% 
+  head(20) %>%
+  ggplot(aes(x = developer, y = sum_total, fill = developer)) +
+  geom_bar(stat = "identity") +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "Developers with Top 20 sum of total sale",
+    y = "mean of sales"
+  )
+
+ggplotly(total_sales_plot1)
+```
+
+
+```{r}
+
+total_sales_plot2 = 
+  game_df %>% 
+  arrange(sum_total) %>%
+  head(20) %>% 
+  mutate(
+    developer = fct_reorder(developer, -sum_total)
+  ) %>% 
+  ggplot(aes(x = developer, y = sum_total, fill = developer)) +
+  geom_bar(stat = "identity") +
+  theme(
+    legend.position = 'none',
+    axis.text.x = element_text(angle = -60,
+                                   vjust = 0.5,
+                                   hjust = 1)
+                              ) +
+  labs(
+    title = "Developers with Last 20 sum of total sales",
+    y = "mean of sales"
+  )
+
+ggplotly(total_sales_plot2)
 ```
 
