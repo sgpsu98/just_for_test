@@ -1,0 +1,78 @@
+---
+title: "tidy"
+author: "Pengyuan Su (ps3195)"
+date: "11/16/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+sale = 
+  read_csv("sales.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate_at(3:7, funs(gsub("m$","",.))) %>% 
+  mutate_at(3:7, funs(gsub("N/A",NA,.))) %>% 
+  filter(str_detect(title, "Pokémon")) %>% 
+  mutate(total_sale = as.numeric(total_sale)) %>% 
+  arrange(-total_sale)
+```
+
+```{r}
+metac = 
+  read_csv("metacritic.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-link) %>% 
+  mutate(user_score = na_if(user_score, "tbd"))
+```
+
+```{r}
+sale = 
+  read_csv("sales.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate_at(3:7, funs(gsub("m$","",.))) %>% 
+  mutate_at(3:7, funs(gsub("N/A",NA,.))) %>% 
+  mutate(total_sale = as.numeric(total_sale)) %>% 
+  arrange(-total_sale) %>% 
+  mutate(
+    console = 
+      recode(console, 
+       PS = "PlayStation",
+       PS2 = "PlayStation 2",
+       PS3 = "PlayStation 3",
+       PS4 = "PlayStation 4",
+       GBA = "Game Boy Advance",
+       X360 = "Xbox 360",
+       NS = "Switch",
+       N64 = "Nintendo 64",
+       XOne = "Xbox One",
+       XB = "Xbox",
+       WiiU = "Wii U",
+       GC = "GameCube",
+       PSV = "PlayStation Vita",
+       DC = "Dreamcast"
+       )
+  ) %>% 
+  rename(platform = console)
+```
+
+
+```{r}
+game_df = 
+  full_join(metac, sale, by = c("title", "platform")) %>%
+  filter(is.na(publisher)) %>% 
+  arrange(-total_sale)
+```
+
+
+```{r}
+metac1 = 
+  read_csv("metacritic.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-link) %>%
+  filter(str_detect(title, "Minecraft"))
+```
+
